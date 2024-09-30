@@ -35,7 +35,8 @@ func CreateRouter(globalCfg config.Config) *mux.Router {
 
 	tokenService := services.NewJWTTokenService([]byte(globalCfg.JWTSecret))
 	authSvc := services.NewAuthService(usersRepo, tokenService)
-	testSvc := services.NewTestService(usersRepo, variantsRepo, testsUserRepo, answerRepo, tasksRepo, resultsRepo, authSvc)
+	testSvc := services.NewTestService(variantsRepo, testsUserRepo, answerRepo, tasksRepo, resultsRepo, *authSvc)
+
 	//controllers
 
 	authCtrl := controllers.NewAuthController(authSvc)
@@ -51,7 +52,7 @@ func CreateRouter(globalCfg config.Config) *mux.Router {
 
 	userRouter := router.PathPrefix("/{user_id}").Subrouter()
 	userRouter.Use(routerAuth)
-	router.HandleFunc("/logout", testCtrl.UpdateTask).Methods(http.MethodPut)
+	router.HandleFunc("/loginout", authCtrl.LoginOut).Methods(http.MethodPut)
 	router.HandleFunc("/variant", testCtrl.ListVariants).Methods(http.MethodGet)
 	router.HandleFunc("/variants/{variant_id}/tasks/{task_id}", testCtrl.GetTask).Methods(http.MethodGet)
 	router.HandleFunc("/variants/{variant_id}/tasks/{task_id}", testCtrl.AnswerTask).Methods(http.MethodPost)

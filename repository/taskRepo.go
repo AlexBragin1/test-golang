@@ -61,7 +61,7 @@ func (r *TasksDBRepo) CountByVariantID(ctx context.Context, variantID domain.UUI
 func (r *TasksDBRepo) FindByVariantID(ctx context.Context, variantID domain.UUID) ([]domain.Task, error) {
 	query := `SELECT (*)
 	FROM variants
-	ORDER BY ASC`
+	ORDER BY id ASC`
 
 	var tasks []domain.Task
 	queryArgs := []interface{}{
@@ -69,6 +69,28 @@ func (r *TasksDBRepo) FindByVariantID(ctx context.Context, variantID domain.UUID
 	}
 
 	if err := r.db.SelectContext(ctx, &tasks, query, queryArgs...); err != nil {
+		return nil, err
+	}
+
+	return tasks, nil
+}
+
+func (r *TasksDBRepo) FindTasksByTestUserID(ctx context.Context, testUserID domain.UUID) ([]domain.Task, error) {
+	var tasks []domain.Task
+
+	query := `
+		SELECT tasks.id, task.variant_id, tasks.description, tasks.correct_answer, tasks.options
+		FROM tasks 
+		JOIN tests_user  ON tests_users.variant_id = tasks.variant_id
+		WHERE test_user_id = $1
+		ORDER BY ID DESC
+	`
+	queryArgs := []interface{}{
+		testUserID,
+	}
+
+	err := r.db.SelectContext(ctx, &tasks, query, queryArgs...)
+	if err != nil {
 		return nil, err
 	}
 

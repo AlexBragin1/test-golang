@@ -21,7 +21,7 @@ func NewTestsUserDBRepo(client *sqlx.DB) *TestsUserDBRepo {
 
 func (r *TestsUserDBRepo) Save(ctx context.Context, test domain.TestUser) error {
 	query := `INSERT
-			INTO tests_users(id, user_id, variant_id, start_at, end_at)
+			INTO tests(id, user_id, variant_id, start_at, end_at)
 			VALUES ($1, $2, $3, $4, $5)`
 	queryArgs := []interface{}{
 		test.ID,
@@ -40,7 +40,7 @@ func (r *TestsUserDBRepo) Save(ctx context.Context, test domain.TestUser) error 
 }
 
 func (r *TestsUserDBRepo) Update(ctx context.Context, test domain.TestUser) error {
-	query := `UPDATE tests_users
+	query := `UPDATE tests
 	SET  start_at=$1, end_at=$2 
 	WHERE user_id =$3 
 	AND variant_id = $4 `
@@ -59,7 +59,7 @@ func (r *TestsUserDBRepo) Update(ctx context.Context, test domain.TestUser) erro
 
 func (r *TestsUserDBRepo) CountByVariantID(ctx context.Context, userID domain.UUID, variantID domain.UUID) (int, error) {
 	query := `SELECT count(*)
-	FROM tests_users
+	FROM tests
 	WHERE user_id 
 	AND variant_id = $1 
 	 `
@@ -79,7 +79,7 @@ func (r *TestsUserDBRepo) CountByVariantID(ctx context.Context, userID domain.UU
 
 func (r *TestsUserDBRepo) GetByVariantID(ctx context.Context, variantID domain.UUID) (*domain.TestUser, error) {
 	query := `SELECT id, user_id, variant_id, start_at, end_at
-	FROM tests_users
+	FROM tests
 	WHERE variant_id = $1 
 	LIMIT 1`
 	queryArgs := []interface{}{
@@ -96,4 +96,25 @@ func (r *TestsUserDBRepo) GetByVariantID(ctx context.Context, variantID domain.U
 	}
 
 	return &test, nil
+}
+
+func (r *TestsUserDBRepo) FindByUserID(ctx context.Context, userID domain.UUID, variantID domain.UUID) (*domain.TestUser, error) {
+	query := `SELECT id, user_id, variant_id, start_at, end_at
+	FROM tests
+	WHERE variant_id = $1 
+	ORDER BY id DESC
+ 	LIMIT 1`
+
+	var testUser domain.TestUser
+
+	queryArgs := []interface{}{
+		userID,
+		variantID,
+	}
+
+	if err := r.db.SelectContext(ctx, &testUser, query, queryArgs...); err != nil {
+		return nil, err
+	}
+
+	return &testUser, nil
 }

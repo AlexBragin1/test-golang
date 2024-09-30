@@ -14,3 +14,11 @@ func NewAnswer(testUserId UUID, answer string) *Answer {
 		Answer:     answer,
 	}
 }
+
+func (a Answer) UpdateAnswer(answer string) *Answer {
+	return &Answer{
+		ID:         a.ID,
+		TestUserID: a.TestUserID,
+		Answer:     a.Answer + " " + answer,
+	}
+}

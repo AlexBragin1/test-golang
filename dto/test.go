@@ -72,7 +72,8 @@ type AnswerTaskReq struct {
 	UserID    domain.UUID `json:"user_id"`
 	VariantID domain.UUID `json:"variant_id"`
 	TaskID    int         `json:"task_id"`
-	Answer    int         `json:"answer"`
+	AnswerID  domain.UUID `json:"answer_id"`
+	Answer    string      `json:"answer"`
 }
 
 func NewAnswerTaskRequest(r *http.Request) (*AnswerTaskReq, error) {
@@ -95,7 +96,9 @@ func NewAnswerTaskRequest(r *http.Request) (*AnswerTaskReq, error) {
 	return request, nil
 }
 
-type AnswerTaskRes struct{}
+type AnswerTaskRes struct {
+	AnswerID domain.UUID `json:"answer_id"`
+}
 
 func (d AnswerTaskReq) Validate() error {
 	if len(d.VariantID) > 0 && len(d.UserID) > 0 {
@@ -109,10 +112,10 @@ func (d AnswerTaskReq) Validate() error {
 type ResultVariantReq struct {
 	UserID    domain.UUID `json:"user_id"`
 	VariantID domain.UUID `json:"variant_id"`
-	Answer    int         `json:"answer"`
+	AnswerID  domain.UUID `json:"answer_id"`
 }
 
-func NewResultsTaskRequest(r *http.Request) (*ResultVariantReq, error) {
+func NewResultsVariantRequest(r *http.Request) (*ResultVariantReq, error) {
 	request := &ResultVariantReq{}
 
 	vars := mux.Vars(r)
@@ -122,7 +125,9 @@ func NewResultsTaskRequest(r *http.Request) (*ResultVariantReq, error) {
 	return request, nil
 }
 
-type ResultVariantRes struct{}
+type ResultVariantRes struct {
+	Percent string `json:"percent"`
+}
 
 func (d ResultVariantReq) Validate() error {
 	if len(d.VariantID) > 0 && len(d.UserID) > 0 {
