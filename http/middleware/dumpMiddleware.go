@@ -5,8 +5,8 @@ import (
 	"io"
 	"net/http"
 
-	http2 "gitlab.com/usdtkg/payout/http"
-	"gitlab.com/usdtkg/payout/logger"
+	http2 "test/http"
+	"test/logger"
 )
 
 type DumpMiddleware struct {

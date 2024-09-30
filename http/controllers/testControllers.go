@@ -93,7 +93,7 @@ func (c *TestController) AnswerTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *TestController) Result(w http.ResponseWriter, r *http.Request) {
-	request, err := dto.NewResultRequest(r)
+	request, err := dto.NewResultsVariantRequest(r)
 	if err != nil {
 		http.Error(w, "Invalid test user ID", http.StatusBadRequest)
 		return

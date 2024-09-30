@@ -22,7 +22,7 @@ func (r *VariantsDBRepo) Save(ctx context.Context) {
 func (r *VariantsDBRepo) FindAll(ctx context.Context) ([]domain.Variant, error) {
 	query := `SELECT (*)
 	FROM variants
-	ORDER BY `
+	ORDER BY ASC`
 
 	var variants []domain.Variant
 

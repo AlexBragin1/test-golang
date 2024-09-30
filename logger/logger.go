@@ -28,25 +28,8 @@ func initZap() {
 	sugar = log.Sugar()
 }
 
-//var xl *xlogger.XLogger
-//
-//func initX() {
-//	var err error
-//
-//	xl, err = xlogger.NewXLogger(
-//		config.C.AppName,
-//		config.C.LogstashHost,
-//		config.C.LogstashPort,
-//		config.C.LogstashProtocol,
-//		5)
-//	if err != nil {
-//		panic(err)
-//	}
-//}
-
 func init() {
 	initZap()
-	//initX()
 }
 
 func Say(msg string, args ...any) {
@@ -55,28 +38,16 @@ func Say(msg string, args ...any) {
 
 func Info(msg string, args ...any) {
 	sugar.Infow(msg, args...)
-	//if err := xl.Info(msg, args...); err != nil {
-	//	log.Error("logger error " + err.Error())
-	//}
 }
 
 func Debug(msg string, args ...any) {
 	sugar.Debugw(msg, args...)
-	//if err := xl.Debug(msg, args...); err != nil {
-	//	log.Error("logger error " + err.Error())
-	//}
 }
 
 func Warn(msg string, args ...any) {
 	sugar.Warnw(msg, args...)
-	//if err := xl.Warn(msg, args...); err != nil {
-	//	log.Error("logger error " + err.Error())
-	//}
 }
 
 func Error(msg string, args ...any) {
 	sugar.Errorw(msg, args...)
-	//if err := xl.Error(msg, args...); err != nil {
-	//	log.Error("logger error " + err.Error())
-	//}
 }

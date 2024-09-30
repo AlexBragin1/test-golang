@@ -10,11 +10,7 @@
 
 
 deploy/postgres-data
-deploy/test-postgres-data
-deploy/esdata
 
-payout
-deploy/.bash_aliases
 
-coverage.out
-coverage.html
+
+

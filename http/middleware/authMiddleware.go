@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -14,7 +13,7 @@ import (
 )
 
 type RequestTokenService interface {
-	ReadFromRequest(ctx context.Context, r *http.Request, keys ...string) (map[string]string, error)
+	ReadFromRequest(r *http.Request, keys ...string) (map[string]string, error)
 }
 
 type AuthMiddleware struct {
@@ -27,7 +26,7 @@ func NewAuthMiddleware(tokenService RequestTokenService) *AuthMiddleware {
 
 func (mw *AuthMiddleware) WithToken(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tokenMap, err := mw.tokenService.ReadFromRequest(ctx, r, "flow")
+		tokenMap, err := mw.tokenService.ReadFromRequest(r, "flow")
 		if err != nil {
 			http2.WriteResponse(w, http.StatusUnauthorized, err)
 			return
@@ -58,7 +57,7 @@ func (mw *AuthMiddleware) WrapWithGroup(resourceGroups groups.Groups) RouteWrap 
 
 func (mw *AuthMiddleware) withGroup(resourceGroups groups.Groups, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tokenMap, err := mw.tokenService.ReadFromRequest(ctx, r, "flow", "groups")
+		tokenMap, err := mw.tokenService.ReadFromRequest(r, "flow", "groups")
 		if err != nil {
 			http2.WriteResponse(w, http.StatusUnauthorized, err)
 			return

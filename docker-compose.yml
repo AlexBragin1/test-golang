@@ -1,142 +1,38 @@
-x-defaults: &defaults
-  restart: unless-stopped
-  networks:
-      - net_1
-
-networks:
-  net_1:
-    # enable_ipv6: true
-    ipam:
-      driver: default
-      config:
-        - subnet: 173.29.0.0/16
-          gateway: 173.29.0.1
-        # - subnet: fc40::/80
+# Use postgres/pg_pass user/password credentials
+version: '3.9'
 
 services:
+
   app:
-    <<: *defaults
     build:
       context: .
-      target: migrate
-    hostname: app
-    depends_on:
-      - db
-    volumes:
-      - ./:/app
-    ports:
-      - 80:${SERVER_PORT}
-    env_file: .env
-    environment:
-      DB_HOST: db
-    command: go run main.go
-    # command: make test
-
-  adminer:
-    <<: *defaults
-    image: adminer
+      dockerfile: Dockerfile
     ports:
       - 8080:8080
+    environment:
+      APP_NAME: ${APP_NAME}
+      SERVER_HOST: ${SERVER_HOST}
+      SERVER_PORT: ${SERVER_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+  
 
   db:
-    <<: *defaults
     hostname: db
-    image: postgres:15-alpine
+    image: postgres:15
     volumes:
-      - ../postgres-data:/var/lib/postgresql/data
+      - ./deploy/postgres-data:/var/lib/postgresql/data
     ports:
       - 5432:5432
+    restart: always
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASS}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_PASSWORD: pg_pass
 
-#  runner:
-#    restart: unless-stopped
-#    image: gitlab/gitlab-runner:alpine
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
-#      - /home/chaos/payout/gitlab-runner:/etc/gitlab-runner
 
-#  app_test:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile.test
-#    environment:
-#      APP_NAME: ${APP_NAME}
-#      SERVER_HOST: ${SERVER_HOST}
-#      SERVER_PORT: ${SERVER_PORT}
-#      DB_USER: ${DB_USER}
-#      DB_PASS: ${DB_PASS}
-#      DB_HOST: ${DB_HOST}
-#      DB_PORT: ${DB_PORT}
-#      DB_NAME: ${DB_NAME}
-#      SMS_SERVICE_ENABLED: ${SMS_SERVICE_ENABLED}
-#      SMS_SERVICE_AUTH_TOKEN: ${SMS_SERVICE_AUTH_TOKEN}
-#      SMS_SERVICE_URL: ${SMS_SERVICE_URL}
+     
+ 
 
-#   db_test:
-#     image: postgres:15
-#     volumes:
-#       - ./deploy/test-postgres-data:/var/lib/postgresql/data
-# #    ports:
-# #      - "5432:5432"
-#     environment:
-#       POSTGRES_USER: postgres
-#       POSTGRES_PASSWORD: pg_pass
-#       POSTGRES_DB: payout_test
 
-#  elasticsearch:
-#    hostname: elasticsearch
-#    image: elasticsearch:7.17.17
-#    volumes:
-#      - ./deploy/esdata:/usr/share/elasticsearch/data
-#    ports:
-#      - '9200:9200'
-#      - '9300:9300'
-#    environment:
-#      - 'discovery.type=single-node'
-#      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
-#    healthcheck:
-#      test: ['CMD', 'curl', '-f', 'http://localhost:9200']
-#      interval: 10s
-#      timeout: 10s
-#      retries: 50
-#
-#  kibana:
-#    image: kibana:7.17.17
-#    hostname: kibana
-#    ports:
-#      - '5601:5601'
-#    depends_on:
-#      - elasticsearch
-#    links:
-#      - elasticsearch
-#    environment:
-#      ELASTIC_HOST: 'http://elasticsearch:9200'
-#      ELASTIC_USERNAME: 'elastic'
-#      ELASTIC_PASSWORD: 'elastic'
-#
-#  logstash:
-#    hostname: logstash
-#    build:
-#      context: .
-#      dockerfile: ./deploy/logstash/Dockerfile
-#    ports:
-#      - 9600:9600
-#      - 5228:5228
-#    environment:
-#      LOGSTASH_PORT: 5228
-#      LOGSTASH_INDEX: 'payout-logs'
-#      ELASTIC_HOST: 'elasticsearch:9200'
-#      ELASTIC_USERNAME: 'elastic'
-#      ELASTIC_PASSWORD: 'elastic'
-#    depends_on:
-#      - elasticsearch
-#    links:
-#      - elasticsearch
-#    healthcheck:
-#      test: ['CMD', 'curl', '-f', 'http://localhost:9600']
-#      interval: 10s
-#      timeout: 10s
-#      retries: 50

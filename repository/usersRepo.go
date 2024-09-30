@@ -44,6 +44,7 @@ func (r *UsersDBRepo) FindByLogin(ctx context.Context, login domain.Login) (*dom
 	query := `SELECT id, login, password, groups, auth, group,start_session_at,end_session_at
 	FROM users
 	WHERE login = $1 
+	OrderBy
 	LIMIT 1`
 
 	var user domain.User
